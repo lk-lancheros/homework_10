@@ -25,7 +25,6 @@ Station = Base.classes.station
 
 # Create our session (link) from Python to the DB
 session = Session(engine)
-
 #################################################
 # Flask Setup
 #################################################
@@ -59,6 +58,7 @@ def precipitation():
     results = session.query(Measurement.date, Measurement.prcp).\
     filter(Measurement.date >='2016-08-23').\
     order_by(Measurement.date).all()
+    session.commit()
 
     # Create a dictionary
     all_prcp = []
@@ -67,7 +67,7 @@ def precipitation():
         prcp_dict["date"] = prcp[0]
         prcp_dict["prcp"] = prcp[1]
         all_prcp.append(prcp_dict)
-
+    time.sleep(2)
     return jsonify(all_prcp)
    
 @app.route("/api/v1.0/stations")
@@ -75,6 +75,7 @@ def stations():
     """Return a list of weather stations"""
     # Query data table station and list variables (station number and name)
     results = session.query(Station.station, Station.name).all()
+    session.commit()
     
      # Create a dictionary from the row data and append to a list, places
     places=[]
@@ -83,7 +84,7 @@ def stations():
         place_dict["station_ID"] = place[0]
         place_dict["station_name"] = place[1]
         places.append(place_dict)
-    
+    time.sleep(2)
     return jsonify(places)
 
 @app.route("/api/v1.0/tobs")
@@ -94,6 +95,7 @@ def tobs():
     results = session.query(Measurement.date, Measurement.tobs).\
     filter(Measurement.date >='2016-08-23').\
     order_by(Measurement.date).all()   
+    session.commit()
 
     # Create a dictionary from the row data and append to a list, all_tobs
     all_tobs = []
@@ -102,7 +104,7 @@ def tobs():
         tob_dict["date"] = tob[0]
         tob_dict["tobs"] = tob[1]
         all_tobs.append(tob_dict)
-
+    time.sleep(2)
     return jsonify(all_tobs)
 
 @app.route("/api/v1.0/start-date/<start>")
@@ -112,6 +114,7 @@ def describe_temp_start_date(start):
    
     result=session.query(func.min(Measurement.tobs),\
     func.avg(Measurement.tobs),func.max(Measurement.tobs)).filter(Measurement.date >= start).all()
+    session.commit()
     time.sleep(2)
     return jsonify(result)
     
@@ -122,6 +125,7 @@ def calc_temps(start, end):
 
     result=session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs),\
     func.max(Measurement.tobs)).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+    session.commit()
     time.sleep(2)
     return jsonify(result)
 
