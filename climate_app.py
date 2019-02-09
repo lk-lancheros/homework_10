@@ -54,7 +54,7 @@ def welcome():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     """Return a list with precipitation data and date"""
-    # Query all passengers
+    # Query measurement data
     results = session.query(Measurement.date, Measurement.prcp).\
     filter(Measurement.date >='2016-08-23').\
     order_by(Measurement.date).all()
